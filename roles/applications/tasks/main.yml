@@ -1,0 +1,105 @@
+---
+
+- name: hipchat ppa key
+  apt_key: url=https://www.hipchat.com/keys/hipchat-linux.key
+
+- name: ppas
+  apt_repository: "repo='{{ item }}'"
+  with_items:
+    # screenshots
+    - "ppa:shutter/ppa"
+    # hipchat
+    - "deb http://downloads.hipchat.com/linux/apt stable main"
+    # text editor
+    - "ppa:webupd8team/sublime-text-3"
+    # atom text editor
+    - "ppa:webupd8team/atom"
+
+- name: update-cache
+  apt: update_cache=yes
+
+- name: install
+  apt: pkg={{ item }}
+  with_items:
+    # commonly used applications with restricted copyright
+    - ubuntu-restricted-extras
+    # flash player
+    - flashplugin-installer
+    # media player
+    - vlc
+    # required to convert ovgs into a gif
+    - mplayer
+    # finance manager
+    - gnucash
+    # password manager
+    - keepassx
+    # image editor
+    - gimp
+    # desktop recording
+    - gtk-recordmydesktop
+    # system monitor
+    - gnome-system-monitor
+    # backups
+    - deja-dup
+    # torrents
+    - transmission
+    # radio
+    - radiotray
+    # screenshot tool
+    - shutter
+    # subtitles download
+    - subdownloader
+    # diff viewer
+    - meld
+    # download manager
+    - steadyflow
+    # required by electrum
+    - python-slowaes
+    # partition management
+    - gparted
+    # pdf anotations
+    - xournal
+    # ebook manager
+    - calibre
+    # ftp
+    - filezilla
+    # reload display configurations
+    - disper
+    # work communication
+    - hipchat
+    # text editor
+    - sublime-text-installer
+    # atom text editor
+    - atom
+    # VPN
+    - openvpn
+    # Skype System Indicator
+    - sni-qt:i386
+
+- name: debs
+  get_url: url={{ item }} dest=/tmp force=no
+  with_items:
+    - https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    - https://dl.google.com/linux/direct/google-talkplugin_current_amd64.deb
+    - https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_2015.02.12_amd64.deb
+    - http://download.skype.com/linux/skype-ubuntu-precise_4.3.0.37-1_i386.deb
+
+- name: install debs
+  command: dpkg --skip-same-version -i /tmp/{{ item }}
+  register: dpkg_result
+  changed_when: "dpkg_result.stdout.startswith('Selecting')"
+  with_items:
+    # Google Chrome browser
+    - google-chrome-stable_current_amd64.deb
+    # Google Talk
+    - google-talkplugin_current_amd64.deb
+    # Dropbox
+    - dropbox_2015.02.12_amd64.deb
+    # Skype
+    - skype-ubuntu-precise_4.3.0.37-1_i386.deb
+
+- name: pip
+  pip: name={{ item }}
+  with_items:
+    # electrum bitcoin wallet
+    - https://download.electrum.org/Electrum-2.2.tar.gz

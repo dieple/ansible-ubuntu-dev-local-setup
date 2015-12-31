@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+  connection: local
+
+  user: devops
+  sudo: true
+
+  vars:
+    user: devops
+
+  roles:
+    - system
+    - applications
+    - development

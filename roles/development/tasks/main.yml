@@ -1,0 +1,105 @@
+---
+
+- name: ubuntu distribution
+  shell: "grep '^deb ' /etc/apt/sources.list | head -n1 | awk '{ print $3 }'"
+  register: codename
+  changed_when: False
+
+- name: ppas
+  apt_repository: repo={{ item }}
+  with_items:
+    # jdk
+    - "ppa:webupd8team/java"
+    # git
+    - "ppa:git-core/ppa"
+
+- name: oracle auto accept select
+  shell: "echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections"
+  changed_when: False
+
+- name: oracle auto seen select
+  shell: "echo debconf shared/accepted-oracle-license-v1-1 seen true  | debconf-set-selections"
+  changed_when: False
+
+- name: install
+  apt: pkg={{ item }}
+  with_items:
+    # build essential
+    - build-essential
+    # automatic configure script builder
+    - autoconf
+    # compilation
+    - make
+    # makefiles
+    - automake
+
+    # ssl headers - required for ruby-build
+    - libssl-dev
+    # yaml headers - required for ruby-build
+    - libyaml-dev
+    # readline - required for ruby-build
+    - libreadline6
+    # readline dev - required for ruby-build
+    - libreadline6-dev
+    # compression lib - required for ruby-build
+    - zlib1g
+    # compression lib headers - required for ruby-build
+    - zlib1g-dev
+    # image processing
+    - imagemagick
+    # required by nokogiri rubygem
+    - libxml2-dev
+    - libxslt1-dev
+    # word diff lib
+    - dwdiff
+    # local dns
+    - dnsmasq
+
+    # node javascript runtime
+    - nodejs
+
+    # jdk
+    - oracle-java8-installer
+    - oracle-java8-set-default
+    # java web plugin
+    - icedtea-plugin
+
+    # git source control
+    - git
+    # git graphical interface
+    - gitg
+    # subversion source control
+    - subversion
+    # bazaar source control
+    - bzr
+
+    # english dict lib
+    - wamerican
+
+    # sqlite database
+    - sqlite3
+    # slite lib
+    - libsqlite3-0
+    # sqlite driver header
+    - libsqlite3-dev
+
+    # mysql database
+    - mysql-server
+    # mysql gui
+    - mysql-workbench
+    # mysql driver lib
+    - libmysqlclient-dev
+    # mysql ruby driver lib
+    - ruby-mysql2
+
+    # command line clipboard utility
+    - xclip
+
+- include: postgres.yml
+- include: redis.yml
+- include: passenger.yml
+- include: virtualbox.yml
+- include: vagrant.yml
+- include: dnsmasq.yml
+- include: ruby.yml
+- include: docker.yml
